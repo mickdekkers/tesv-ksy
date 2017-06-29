@@ -119,8 +119,6 @@ types:
         doc: The number of Global Data in File.globalDataTable3
       - id: change_forms_count
         type: u4
-      - id: unused
-        size: 4 * 15
   form_id_array:
     seq:
       - id: count
@@ -177,6 +175,8 @@ types:
             1: player_location
             3: global_variables
             4: created_objects
+            6: weather
+            7: audio
   misc_stats:
     doc: "http://en.uesp.net/wiki/Tes5Mod:Save_File_Format/Misc_Stats"
     seq:
@@ -199,20 +199,28 @@ types:
     doc: "http://en.uesp.net/wiki/Tes5Mod:Save_File_Format/Player_Location"
     seq:
       - id: next_object_id
+        doc: Number of next savegame specific object id, i.e. FFxxxxxx
         type: u4
       - id: world_space_1
+        doc: 	This form is usually 0x0 or a worldspace. coorX and coorY represent a cell in this worldspace
         type: ref_id
       - id: coor_x
+        doc: x-coordinate (cell coordinates) in worldSpace1
         type: s4
       - id: coor_y
+        doc: y-coordinate (cell coordinates) in worldSpace1
         type: s4
       - id: world_space_2
+        doc: "This can be either a worldspace or an interior cell. If it's a worldspace, the player is located at the cell (coorX, coorY). posX/Y/Z is the player's position inside the cell"
         type: ref_id
       - id: pos_x
+        doc: x-coordinate in worldSpace2
         type: f4
       - id: pos_y
+        doc: y-coordinate in worldSpace2
         type: f4
       - id: pos_z
+        doc: z-coordinate in worldSpace2
         type: f4
   global_variables:
     doc: "http://en.uesp.net/wiki/Tes5Mod:Save_File_Format/Global_Variables"
@@ -235,30 +243,35 @@ types:
       - id: weapon_count
         type: vsval
       - id: weapon_enchs
+        doc: List of all created enchantments that have been applied to weapons
         type: enchantment
         repeat: expr
         repeat-expr: weapon_count.value
       - id: armor_count
         type: vsval
       - id: armor_enchs
+        doc: List of all created enchantments that have been applied to armor. Not sure which types of armor (Body/Gloves/Boots/Shield/etc) this encompasses.
         type: enchantment
         repeat: expr
         repeat-expr: armor_count.value
       - id: potion_count
         type: vsval
       - id: potions
+        doc: List of all created potions
         type: enchantment
         repeat: expr
         repeat-expr: potion_count.value
       - id: poison_count
         type: vsval
       - id: poisons
+        doc: List of all created poisons
         type: enchantment
         repeat: expr
         repeat-expr: poison_count.value
   enchantment:
     seq:
       - id: ref_id
+        doc: FormID of the enchantment
         type: ref_id
       - id: times_used
         type: u4
@@ -275,6 +288,7 @@ types:
       - id: info
         type: ench_info
       - id: price
+        doc: Amount this enchantment adds to the base item's price
         type: f4
   ench_info:
     seq:
@@ -284,6 +298,48 @@ types:
         type: u4
       - id: area
         type: u4
+  weather:
+    seq:
+      - id: climate
+        type: ref_id
+      - id: weather
+        type: ref_id
+      - id: prev_weather
+        doc: Only during weather transition. In other cases it equals zero.
+        type: ref_id
+      - id: unk_weather_1
+        type: ref_id
+      - id: unk_weather_2
+        type: ref_id
+      - id: regn_weather
+        type: ref_id
+      - id: cur_time
+        doc: Current in-game time in hours
+        type: f4
+      - id: beg_time
+        doc: Time of current weather beginning
+        type: f4
+      - id: weather_pct
+        doc: A value from 0.0 to 1.0 describing how far in the current weather has transitioned
+        type: f4
+      # Skip unknown data
+      - size: 4 * 8
+      - id: flags
+        type: u1
+  audio:
+    seq:
+      # Skip unknown ref_id
+      - size: 3
+      - id: tracks_count
+        type: vsval
+      - id: tracks
+        doc: Seems to contain music tracks (MUST records) that were playing at the time of saving, not including the background music.
+        type: ref_id
+        repeat: expr
+        repeat-expr: tracks_count.value
+      - id: bgm
+        doc: Background music at time of saving. Only MUST records have been observed here.
+        type: ref_id
 enums:
   e_misc_stat:
     0: general
