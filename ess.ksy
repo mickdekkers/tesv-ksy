@@ -178,6 +178,8 @@ types:
             6: weather
             7: audio
             100: process_list
+            109: magic_favorites
+            112: ingredient_shared
   misc_stats:
     doc: "http://en.uesp.net/wiki/Tes5Mod:Save_File_Format/Misc_Stats"
     seq:
@@ -300,6 +302,7 @@ types:
       - id: area
         type: u4
   weather:
+    doc: "http://en.uesp.net/wiki/Tes5Mod:Save_File_Format/Weather"
     seq:
       - id: climate
         type: ref_id
@@ -328,6 +331,7 @@ types:
       - id: flags
         type: u1
   audio:
+    doc: "http://en.uesp.net/wiki/Tes5Mod:Save_File_Format/Audio"
     seq:
       # Skip unknown ref_id
       - size: 3
@@ -342,6 +346,7 @@ types:
         doc: Background music at time of saving. Only MUST records have been observed here.
         type: ref_id
   process_list:
+    doc: "http://en.uesp.net/wiki/Tes5Mod:Save_File_Format/Process_Lists"
     seq:
       # Skip unknown floats
       - size: 4 * 3
@@ -406,6 +411,40 @@ types:
       - id: is_cleared
         doc: 0 - active crime, 1 - it was atoned
         type: u1
+  magic_favorites:
+    doc: "http://en.uesp.net/wiki/Tes5Mod:Save_File_Format/Magic_Favorites"
+    seq:
+      - id: favorited_magic_count
+        type: vsval
+      - id: favorited_magic
+        doc: Spells, shouts, abilities etc.
+        type: ref_id
+        repeat: expr
+        repeat-expr: favorited_magic_count.value
+      - id: magic_hotkey_count
+        type: vsval
+      - id: magic_hotkey
+        doc: Hotkey corresponds to the position of magic in this array
+        type: ref_id
+        repeat: expr
+        repeat-expr: magic_hotkey_count.value
+  ingredient_shared:
+    doc: |
+      Pairs of failed ingredient combinations in alchemy.
+      http://en.uesp.net/wiki/Tes5Mod:Save_File_Format/Ingredient_Shared
+    seq:
+      - id: count
+        type: u4
+      - id: ingredients_combined
+        type: ingredient_combination
+        repeat: expr
+        repeat-expr: count
+  ingredient_combination:
+    seq:
+      - id: ingredient_0
+        type: ref_id
+      - id: ingredient_1
+        type: ref_id
 enums:
   e_misc_stat:
     0: general
