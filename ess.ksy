@@ -507,6 +507,107 @@ types:
       - id: initial_type
         type: change_form_initial_data
   change_form_initial_data:
+    seq:
+      - id: value
+        type:
+          switch-on: initial_type
+          cases:
+            0: initial_type_0
+            1: initial_type_1
+            2: initial_type_2
+            3: initial_type_3
+            4: initial_type_4
+            5: initial_type_5
+            6: initial_type_6
+    types:
+      initial_type_0:
+        seq:
+          - size: 0
+      initial_type_1:
+        seq:
+          # Skip unknown u2
+          - size: 2
+          - id: cell_x
+            type: u1
+          - id: cell_y
+            type: u1
+          # Skip unknown u4
+          - size: 4
+      initial_type_2:
+        seq:
+          # Skip unknown u2
+          - size: 2
+          # Skip unknown s2
+          - size: 2
+          # Skip unknown s2
+          - size: 2
+          # Skip unknown u4
+          - size: 4
+      initial_type_3:
+        seq:
+          # Skip unknown u4
+          - size: 4
+      initial_type_4:
+        seq:
+          - id: cell_world
+            type: ref_id
+          # TODO: check if these are actually in x-y-z order
+          - id: pos_x
+            type: f4
+          - id: pos_y
+            type: f4
+          - id: pos_z
+            type: f4
+          - id: rot_x
+            type: f4
+          - id: rot_y
+            type: f4
+          - id: rot_z
+            type: f4
+      initial_type_5:
+        seq:
+          - id: cell_world
+            type: ref_id
+          # TODO: check if these are actually in x-y-z order
+          - id: pos_x
+            type: f4
+          - id: pos_y
+            type: f4
+          - id: pos_z
+            type: f4
+          - id: rot_x
+            type: f4
+          - id: rot_y
+            type: f4
+          - id: rot_z
+            type: f4
+          # Skip unknown u1
+          - size: 1
+          - id: base_object
+            type: ref_id
+      initial_type_6:
+        seq:
+          - id: cell_world
+            type: ref_id
+          # TODO: check if these are actually in x-y-z order
+          - id: pos_x
+            type: f4
+          - id: pos_y
+            type: f4
+          - id: pos_z
+            type: f4
+          - id: rot_x
+            type: f4
+          - id: rot_y
+            type: f4
+          - id: rot_z
+            type: f4
+          - id: starting_cell_world
+            type: ref_id
+          # Skip unknown s2
+          - size: 2
+          # Skip unknown s2
+          - size: 2
     instances:
       change_type:
         value: _parent._parent.change_form_type
