@@ -620,34 +620,24 @@ types:
       form_id:
         value: _parent._parent.form_id
       initial_type:
+        # For comments see https://github.com/mickdekkers/tesv-ksy/blob/a3f2e61fa61c70457a7d2fdbaec78eda6584fc53/ess.ksy#L622-L683
         value: >
-          # if form is a CELL
           ((change_type == e_change_form_type::cell) ?
             (
-              # if CHANGE_CELL_DETACHTIME is not set
               ((change_flags & (1 << 30) == 0) ?
-                # return 0
                 0 :
-                # else if CHANGE_CELL_EXTERIOR_CHAR is set
                 ((change_flags & (1 << 29) != 0) ?
-                  # return 1
                   1 :
-                  # else if CHANGE_CELL_EXTERIOR_SHORT is set
                   ((change_flags & (1 << 28) != 0) ?
-                    # return 2
                     2 :
-                    # else if CHANGE_CELL_DETACHTIME is set
                     ((change_flags & (1 << 30) != 0) ?
-                      # return 3
                       3 :
-                      # else return 0
                       0
                     )
                   )
                 )
               )
             ) :
-            # else if form is a REFR, ACHR, PMIS, PGRE, PBEA, PFLA, PHZD, PBAR, PCON, or PARW
             ((change_type == e_change_form_type::refr or
               change_type == e_change_form_type::achr or
               change_type == e_change_form_type::pmis or
@@ -659,25 +649,17 @@ types:
               change_type == e_change_form_type::pcon or
               change_type == e_change_form_type::parw) ?
               (
-                # if the form is a "created" one
                 ((form_id.byte0 == 0xFF) ?
-                  # return 5
                   5 :
-                  # else if CHANGE_REFR_PROMOTED or CHANGE_REFR_CELL_CHANGED is set
                   (((change_flags & (1 << 25) != 0) or (change_flags & (1 << 3) != 0)) ?
-                    # return 6
                     6 :
-                    # else if CHANGE_REFR_HAVOK_MOVE or CHANGE_REFR_MOVE is set
                     (((change_flags & (1 << 2) != 0) or (change_flags & (1 << 1) != 0)) ?
-                      # return 4
                       4 :
-                      # else return 0
                       0
                     )
                   )
                 )
               ) :
-              # else return 0
               0
             )
           )
