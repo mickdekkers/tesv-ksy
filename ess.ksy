@@ -525,8 +525,7 @@ types:
             6: initial_type_6
     types:
       initial_type_0:
-        seq:
-          - size: 0
+        doc: No initial data
       initial_type_1:
         seq:
           # Skip unknown u2
