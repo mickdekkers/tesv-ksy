@@ -490,18 +490,22 @@ types:
       - id: data_uncomp
         size: length
         if: uncompressed_length == 0
-      - id: data_comp
-        size: length
-        process: zlib
-        if: uncompressed_length > 0
-    instances:
-      data:
-        value: >
-          (uncompressed_length > 0) ? data_comp : data_uncomp
         type:
           switch-on: change_form_type
           cases:
             e_change_form_type::refr: change_form_refr
+      - id: data_comp
+        size: length
+        process: zlib
+        if: uncompressed_length > 0
+        type:
+          switch-on: change_form_type
+          cases:
+            e_change_form_type::refr: change_form_refr
+    instances:
+      data:
+        value: >
+          (uncompressed_length > 0) ? data_comp : data_uncomp
   change_form_refr:
     seq:
       - id: initial_type
