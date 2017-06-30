@@ -8,6 +8,7 @@ meta:
   encoding: "windows-1252"
 seq:
   - id: magic
+    doc: This is always "TESV_SAVEGAME"
     contents: [0x54, 0x45, 0x53, 0x56, 0x5F, 0x53, 0x41, 0x56, 0x45, 0x47, 0x41, 0x4D, 0x45]
   - id: header_size
     type: u4
@@ -23,7 +24,8 @@ seq:
     size: 3 * shot_width * shot_height
     doc: RGB pixel data of the image
   - id: form_version
-    contents: [0x4a]
+    doc: Current as of Skyrim 1.9 is 74
+    contents: [0x4A]
   - id: plugin_info_size
     type: u4
   - id: plugin_info
@@ -49,10 +51,16 @@ instances:
     type: global_data_record
     repeat: expr
     repeat-expr: file_location_table.global_data_table_3_count
+  change_forms:
+    pos: file_location_table.change_forms_offset
+    type: change_form
+    repeat: expr
+    repeat-expr: file_location_table.change_forms_count
 types:
   header:
     seq:
       - id: version
+        doc: Current as of Skyrim 1.9 is 9
         contents: [0x9, 0x0, 0x0, 0x0]
       - id: save_number
         type: u4
@@ -205,7 +213,7 @@ types:
         doc: Number of next savegame specific object id, i.e. FFxxxxxx
         type: u4
       - id: world_space_1
-        doc: 	This form is usually 0x0 or a worldspace. coorX and coorY represent a cell in this worldspace
+        doc: This form is usually 0x0 or a worldspace. coorX and coorY represent a cell in this worldspace
         type: ref_id
       - id: coor_x
         doc: x-coordinate (cell coordinates) in worldSpace1
@@ -377,7 +385,7 @@ types:
       # Skip unknown u1
       - size: 1
       - id: quantity
-        doc: 	The number of stolen items (e.g. if you've stolen Gold(7), it would be equals to 7). Only for thefts
+        doc: The number of stolen items (e.g. if you've stolen Gold(7), it would be equals to 7). Only for thefts
         type: u4
       - id: serial_num
         doc: Assigned in accordance with nextNum
@@ -445,6 +453,129 @@ types:
         type: ref_id
       - id: ingredient_1
         type: ref_id
+  change_form:
+    seq:
+      - id: form_id
+        type: ref_id
+      - id: change_flags
+        type: u4
+      - id: length_size
+        doc: The size of the data lengths
+        type: b2
+      - id: change_form_type
+        doc: The type of form
+        type: b6
+        enum: e_change_form_type
+      - id: version
+        doc: Current as of Skyrim 1.9 is 74
+        contents: [0x4A]
+      - id: length
+        doc: Length of following data
+        type:
+          switch-on: length_size
+          cases:
+            0: u1
+            1: u2
+            2: u4
+            # _: throw_error
+      - id: uncompressed_length
+        doc: If this value is non-zero, data is compressed. This value then represents the uncompressed length
+        type:
+          switch-on: length_size
+          cases:
+            0: u1
+            1: u2
+            2: u4
+            # _: throw_error
+      - id: data_uncomp
+        size: length
+        if: uncompressed_length == 0
+      - id: data_comp
+        size: length
+        process: zlib
+        if: uncompressed_length > 0
+    instances:
+      data:
+        value: >
+          (uncompressed_length > 0) ? data_comp : data_uncomp
+        type:
+          switch-on: change_form_type
+          cases:
+            e_change_form_type::refr: change_form_refr
+  change_form_refr:
+    seq:
+      - id: initial_type
+        type: change_form_initial_data
+  change_form_initial_data:
+    instances:
+      change_type:
+        value: _parent._parent.change_form_type
+      change_flags:
+        value: _parent._parent.change_flags
+      form_id:
+        value: _parent._parent.form_id
+      initial_type:
+        value: >
+          # if form is a CELL
+          ((change_type == e_change_form_type::cell) ?
+            (
+              # if CHANGE_CELL_DETACHTIME is not set
+              ((change_flags & (1 << 30) == 0) ?
+                # return 0
+                0 :
+                # else if CHANGE_CELL_EXTERIOR_CHAR is set
+                ((change_flags & (1 << 29) != 0) ?
+                  # return 1
+                  1 :
+                  # else if CHANGE_CELL_EXTERIOR_SHORT is set
+                  ((change_flags & (1 << 28) != 0) ?
+                    # return 2
+                    2 :
+                    # else if CHANGE_CELL_DETACHTIME is set
+                    ((change_flags & (1 << 30) != 0) ?
+                      # return 3
+                      3 :
+                      # else return 0
+                      0
+                    )
+                  )
+                )
+              )
+            ) :
+            # else if form is a REFR, ACHR, PMIS, PGRE, PBEA, PFLA, PHZD, PBAR, PCON, or PARW
+            ((change_type == e_change_form_type::refr or
+              change_type == e_change_form_type::achr or
+              change_type == e_change_form_type::pmis or
+              change_type == e_change_form_type::pgre or
+              change_type == e_change_form_type::pbea or
+              change_type == e_change_form_type::pfla or
+              change_type == e_change_form_type::phzd or
+              change_type == e_change_form_type::pbar or
+              change_type == e_change_form_type::pcon or
+              change_type == e_change_form_type::parw) ?
+              (
+                # if the form is a "created" one
+                ((form_id.byte0 == 0xFF) ?
+                  # return 5
+                  5 :
+                  # else if CHANGE_REFR_PROMOTED or CHANGE_REFR_CELL_CHANGED is set
+                  (((change_flags & (1 << 25) != 0) or (change_flags & (1 << 3) != 0)) ?
+                    # return 6
+                    6 :
+                    # else if CHANGE_REFR_HAVOK_MOVE or CHANGE_REFR_MOVE is set
+                    (((change_flags & (1 << 2) != 0) or (change_flags & (1 << 1) != 0)) ?
+                      # return 4
+                      4 :
+                      # else return 0
+                      0
+                    )
+                  )
+                )
+              ) :
+              # else return 0
+              0
+            )
+          )
 enums:
   e_misc_stat:
     0: general
@@ -461,3 +592,53 @@ enums:
     3: assault
     4: murder
     6: lycanthropy
+  e_change_form_type:
+    0: refr
+    1: achr
+    2: pmis
+    3: pgre
+    4: pbea
+    5: pfla
+    6: cell
+    7: info
+    8: qust
+    9: npc_
+    10: acti
+    11: tact
+    12: armo
+    13: book
+    14: cont
+    15: door
+    16: ingr
+    17: ligh
+    18: misc
+    19: appa
+    20: stat
+    21: mstt
+    22: furn
+    23: weap
+    24: ammo
+    25: keym
+    26: alch
+    27: idlm
+    28: note
+    29: eczn
+    30: clas
+    31: fact
+    32: pack
+    33: navm
+    34: woop
+    35: mgef
+    36: smqn
+    37: scen
+    38: lctn
+    39: rela
+    40: phzd
+    41: pbar
+    42: pcon
+    43: flst
+    44: lvln
+    45: lvli
+    46: lvsp
+    47: parw
+    48: ench
