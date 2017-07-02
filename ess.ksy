@@ -494,6 +494,7 @@ types:
           switch-on: change_form_type
           cases:
             e_change_form_type::refr: change_form_refr
+            e_change_form_type::cell: change_form_cell
       - id: data_comp
         size: length
         process: zlib
@@ -502,13 +503,18 @@ types:
           switch-on: change_form_type
           cases:
             e_change_form_type::refr: change_form_refr
+            e_change_form_type::cell: change_form_cell
     instances:
       data:
         value: >
           (uncompressed_length > 0) ? data_comp : data_uncomp
   change_form_refr:
     seq:
-      - id: initial_type
+      - id: initial_data
+        type: change_form_initial_data
+  change_form_cell:
+    seq:
+      - id: initial_data
         type: change_form_initial_data
   change_form_initial_data:
     seq:
