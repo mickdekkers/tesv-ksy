@@ -512,10 +512,12 @@ types:
     seq:
       - id: initial_data
         type: change_form_initial_data
+        parent: _parent
   change_form_cell:
     seq:
       - id: initial_data
         type: change_form_initial_data
+        parent: _parent
   change_form_initial_data:
     seq:
       - id: value
@@ -619,11 +621,11 @@ types:
           - size: 2
     instances:
       change_type:
-        value: _parent._parent.change_form_type
+        value: _parent.change_form_type
       change_flags:
-        value: _parent._parent.change_flags
+        value: _parent.change_flags
       form_id:
-        value: _parent._parent.form_id
+        value: _parent.form_id
       initial_type:
         # For comments see https://github.com/mickdekkers/tesv-ksy/blob/a3f2e61fa61c70457a7d2fdbaec78eda6584fc53/ess.ksy#L622-L683
         value: >
