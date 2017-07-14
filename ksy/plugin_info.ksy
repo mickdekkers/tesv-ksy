@@ -1,3 +1,4 @@
+doc-ref: http://en.uesp.net/wiki/Tes5Mod:Save_File_Format#Plugin_Info
 meta:
   id: plugin_info
   license: MIT

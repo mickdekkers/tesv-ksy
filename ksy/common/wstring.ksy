@@ -1,3 +1,4 @@
+doc-ref: http://en.uesp.net/wiki/Tes5Mod:File_Format_Conventions#Data_Types
 meta:
   id: wstring
   license: MIT

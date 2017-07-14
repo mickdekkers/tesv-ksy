@@ -1,3 +1,4 @@
+doc-ref: http://en.uesp.net/wiki/Tes5Mod:Save_File_Format#File_Location_Table
 meta:
   id: file_location_table
   license: MIT

@@ -1,3 +1,4 @@
+doc-ref: http://en.uesp.net/wiki/Tes5Mod:Save_File_Format#File
 meta:
   id: form_id_array
   license: MIT

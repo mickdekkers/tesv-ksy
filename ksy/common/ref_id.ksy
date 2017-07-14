@@ -1,3 +1,4 @@
+doc-ref: http://en.uesp.net/wiki/Tes5Mod:Save_File_Format#RefID
 meta:
   id: ref_id
   license: MIT
