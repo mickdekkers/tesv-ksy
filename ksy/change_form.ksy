@@ -65,6 +65,69 @@ types:
       - id: initial_data
         type: change_form_initial_data
         parent: _parent
+      - id: havok_data
+        type: havok_data
+        if: _parent.change_flags & flags::change_refr_havok_move.to_i != 0
+      - id: change_form_flags
+        type: change_form_flags
+        if: _parent.change_flags & flags::change_form_flags.to_i != 0
+      - id: base_object
+        type: ref_id
+        if: _parent.change_flags & flags::change_refr_baseobject.to_i != 0
+      - id: scale
+        type: f4
+        if: _parent.change_flags & flags::change_refr_scale.to_i != 0
+      # http://en.uesp.net/wiki/Tes5Mod:Save_File_Format/Extra_data
+      # - id: extra_data
+      #   type: extra_data
+      #   if: (_parent.change_flags & flags::change_refr_extra_ownership.to_i != 0 or
+      #        _parent.change_flags & flags::change_object_extra_lock.to_i != 0 or
+      #        _parent.change_flags & flags::change_refr_extra_encounter_zone.to_i != 0 or
+      #        _parent.change_flags & flags::change_refr_extra_game_only.to_i != 0 or
+      #        _parent.change_flags & flags::change_object_extra_ammo.to_i != 0 or
+      #        _parent.change_flags & flags::change_door_extra_teleport.to_i != 0 or
+      #        _parent.change_flags & flags::change_refr_promoted.to_i != 0 or
+      #        _parent.change_flags & flags::change_refr_extra_activating_children.to_i != 0 or
+      #        _parent.change_flags & flags::change_object_extra_item_data.to_i != 0)
+    types:
+      havok_data:
+        seq:
+          - id: count
+            type: vsval
+          - id: data
+            type: u1
+            repeat: expr
+            repeat-expr: count.value
+      change_form_flags:
+        doc-ref: http://en.uesp.net/wiki/Tes5Mod:ChangeFlags#Change_form_flags
+        seq:
+          - id: flag
+            type: u4
+          # Skip unknown u2
+          - size: 2
+    enums:
+      flags:
+        0x01: change_form_flags
+        0x04: change_refr_havok_move
+        0x08: change_refr_cell_changed
+        0x10: change_refr_scale
+        0x20: change_refr_inventory
+        0x40: change_refr_extra_ownership
+        0x80: change_refr_baseobject
+        0x2000000: change_refr_promoted
+        0x4000000: change_refr_extra_activating_children
+        0x8000000: change_refr_leveled_inventory
+        0x10000000: change_refr_animation
+        0x20000000: change_refr_extra_encounter_zone
+        0x40000000: change_refr_extra_created_only
+        0x80000000: change_refr_extra_game_only
+        0x400: change_object_extra_item_data
+        0x800: change_object_extra_ammo
+        0x1000: change_object_extra_lock
+        0x20000: change_door_extra_teleport
+        0x200000: change_object_empty
+        0x400000: change_object_open_default_state
+        0x800000: change_object_open_state
   change_form_cell:
     seq:
       - id: initial_data
