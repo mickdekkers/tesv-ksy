@@ -77,18 +77,24 @@ types:
       - id: scale
         type: f4
         if: _parent.change_flags & flags::change_refr_scale.to_i != 0
-      # http://en.uesp.net/wiki/Tes5Mod:Save_File_Format/Extra_data
+      # TODO (crap): http://en.uesp.net/wiki/Tes5Mod:Save_File_Format/Extra_data
       # - id: extra_data
       #   type: extra_data
-      #   if: (_parent.change_flags & flags::change_refr_extra_ownership.to_i != 0 or
-      #        _parent.change_flags & flags::change_object_extra_lock.to_i != 0 or
-      #        _parent.change_flags & flags::change_refr_extra_encounter_zone.to_i != 0 or
-      #        _parent.change_flags & flags::change_refr_extra_game_only.to_i != 0 or
-      #        _parent.change_flags & flags::change_object_extra_ammo.to_i != 0 or
-      #        _parent.change_flags & flags::change_door_extra_teleport.to_i != 0 or
-      #        _parent.change_flags & flags::change_refr_promoted.to_i != 0 or
-      #        _parent.change_flags & flags::change_refr_extra_activating_children.to_i != 0 or
-      #        _parent.change_flags & flags::change_object_extra_item_data.to_i != 0)
+      #   if: |
+      #   (_parent.change_flags & flags::change_refr_extra_ownership.to_i != 0 or
+      #    _parent.change_flags & flags::change_object_extra_lock.to_i != 0 or
+      #    _parent.change_flags & flags::change_refr_extra_encounter_zone.to_i != 0 or
+      #    _parent.change_flags & flags::change_refr_extra_game_only.to_i != 0 or
+      #    _parent.change_flags & flags::change_object_extra_ammo.to_i != 0 or
+      #    _parent.change_flags & flags::change_door_extra_teleport.to_i != 0 or
+      #    _parent.change_flags & flags::change_refr_promoted.to_i != 0 or
+      #    _parent.change_flags & flags::change_refr_extra_activating_children.to_i != 0 or
+      #    _parent.change_flags & flags::change_object_extra_item_data.to_i != 0)
+      # - id: inventory
+      #   type: inventory
+      #   if: |
+      #     (_parent.change_flags & flags::change_refr_inventory.to_i != 0 or
+      #      _parent.change_flags & flags::change_refr_leveled_inventory.to_i != 0)
     types:
       havok_data:
         seq:
@@ -105,6 +111,26 @@ types:
             type: u4
           # Skip unknown u2
           - size: 2
+      # inventory:
+      #   seq:
+      #     - id: count
+      #       type: vsval
+      #     - id: items
+      #       type: inventory_item
+      #       repeat: expr
+      #       repeat-expr: count.value
+      # inventory_item:
+      #   seq:
+      #     - id: item
+      #       type: ref_id
+      #     - id: item_count
+      #       type: s4
+      #     - id: extra_count
+      #       type: vsval
+      #     - id: extra_datas
+      #       type: extra_data
+      #       repeat: expr
+      #       repeat-expr: extra_count.value
     enums:
       flags:
         0x01: change_form_flags
