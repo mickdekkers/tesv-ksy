@@ -1,3 +1,4 @@
+doc-ref: http://en.uesp.net/wiki/Tes5Mod:Save_File_Format
 meta:
   id: tesv_savegame
   title: "Skyrim Save Format"
@@ -7,9 +8,6 @@ meta:
   endian: le
   encoding: "windows-1252"
   imports:
-    - common/vsval
-    - common/wstring
-    - common/ref_id
     - header
     - file_location_table
     - form_id_array
